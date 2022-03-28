@@ -98,10 +98,12 @@ bot.on('message', async (msg) => {
             }
         }
         else {
+            console.log('Video errado:'+msg.text);
             bot.sendMessage(msg.chat.id, i18n.getString('label.global.errorvideoformat', lang));
         }
 
     } else {
+        console.log('CHAT: '+msg.text);
         const opts = {
             reply_markup: {
                 inline_keyboard: [
@@ -451,11 +453,11 @@ let verificarPagamento = async (element) => {
 
 const schedule = require('node-schedule');
 
-const job = schedule.scheduleJob('*/30 * * * * *', function () {
+const job = schedule.scheduleJob('*/50 * * * * *', function () {
     atualizar();
 });
 
-const administrador = schedule.scheduleJob('*/5 * * * * *', function () {
+const administrador = schedule.scheduleJob('*/30 * * * * *', function () {
     admin();
 });
 
@@ -514,7 +516,7 @@ admin = async () => {
     //print
     p.printTable();
 }
-port = process.env.PORT || 8080;
+port = process.env.PORT || 8888;
 http.createServer(function (req, res) {
     res.write('RED BOT'); 
     res.end(); 
