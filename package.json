@@ -1,0 +1,26 @@
+{
+  "name": "xred_robot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Sabotage",
+  "license": "ISC",
+  "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
+    "console-table-printer": "^2.10.0",
+    "http": "0.0.1-security",
+    "mercadopago": "^1.5.12",
+    "node-libcurl": "^2.3.4",
+    "node-schedule": "^2.1.0",
+    "node-telegram-bot-api": "^0.56.0",
+    "properties-reader": "^2.2.0",
+    "sequelize": "^6.17.0",
+    "shortid": "^2.2.16",
+    "sqlite3": "^5.0.2"
+  }
+}
