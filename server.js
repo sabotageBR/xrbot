@@ -40,7 +40,7 @@ var mercadopago = require('mercadopago');
 
 var lang = 'en-us';
 
-const minExpired = 1000;
+const minExpired = 30;
 
 (async () => {
     try {
@@ -59,19 +59,21 @@ bot.onText(/\/start(.*)/, (msg, match) => {
     console.log(match);
     console.log(match[1].trim());
     getClienteByCodigo(match[1].trim()).then(cliente => {
-        getClienteByCodigo(msg.from.id).then(novoCliente => {
-            if (novoCliente == null && msg.from.id != cliente.codigo) {
-                cliente.pontos = cliente.pontos + 20;
-                cliente.save();
-                Indication.create({
-                    cliente_origem: cliente.codigo,
-                    cliente_destino: msg.from.id,
-                    pontos: 30
-                });
-            } else {
-                console.log('nao eh um novo usuario');
-            }
-        });
+        if(cliente && cliente.codigo){
+            getClienteByCodigo(msg.from.id).then(novoCliente => {
+                if (novoCliente == null && msg.from.id != cliente.codigo) {
+                    cliente.pontos = cliente.pontos + 20;
+                    cliente.save();
+                    Indication.create({
+                        cliente_origem: cliente.codigo,
+                        cliente_destino: msg.from.id,
+                        pontos: 30
+                    });
+                } else {
+                    console.log('nao eh um novo usuario');
+                }
+            });
+        }    
 
     });
 
