@@ -417,9 +417,9 @@ let captureOrder = async function (element) {
         });
 
     } else {
-        // element.status = 'EXPIRED';
-        // element.data_pagamento = new Date();
-        // element.save();
+        element.status = 'EXPIRED';
+        element.data_pagamento = new Date();
+        element.save();
     }
 }
 
