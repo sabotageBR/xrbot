@@ -160,7 +160,7 @@ bot.on('callback_query', async function onCallbackQuery(callbackQuery) {
     let text = 'Qualquer coisa';
 
     if (action === 'mypoints') {
-        if(cliente && cliente.pontos){
+        if(cliente){
             text = i18n.getString('label.global.points', lang) + ': ' + cliente.pontos;
             bot.sendMessage(msg.chat.id, text);
         }
