@@ -28,7 +28,7 @@ const { create } = require('domain');
 
 const { Table } = require('console-table-printer');
 
-const pretty = require('pretty-time');
+const format = require('date-format');
 
 
 //DESENVOLVIMENTO
@@ -38,7 +38,6 @@ const pretty = require('pretty-time');
 
 
 //PRODUCAO
-
 let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
 let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
 const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
@@ -103,7 +102,7 @@ bot.on('message', async (msg) => {
     let cliente = await getCliente(msg);
     if (msg.text.includes('http')) {
         if (msg.text.includes('xvideos')) {
-            console.log(pretty(new Date().getTime())+': '+msg.text);
+            console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+msg.text);
             if (cliente.codigo == ADMIN ||  cliente.pontos > 0) {
                 bot.sendMessage(msg.chat.id, i18n.getString('label.global.waitextractvideo', lang));
                 executar(msg, cliente, bot);
@@ -566,7 +565,7 @@ admin = async () => {
     const tUltimasOrders = new Table();
 
     ultimasOrders.forEach(async (order)=>{
-        tUltimasOrders.addRow({ id: order.id, data:pretty(order.createdAt.getTime()),status:order.status, cliente: order.cliente, transacao:order.transacao,valor:order.valor,pontos:order.pontos}, { color: 'blue' });
+        tUltimasOrders.addRow({ id: order.id, data:format.asString('dd/MM/yy hh:mm:ss',order.createdAt),status:order.status, cliente: order.cliente, transacao:order.transacao,valor:order.valor,pontos:order.pontos}, { color: 'blue' });
     });
     
     console.log('---------- Ultimas transações ----------------')
