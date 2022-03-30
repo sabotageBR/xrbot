@@ -30,6 +30,9 @@ const { Table } = require('console-table-printer');
 
 const format = require('date-format');
 
+const Sequelize = require('sequelize');
+
+
 
 //DESENVOLVIMENTO
 // let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
@@ -38,9 +41,9 @@ const format = require('date-format');
 
 
 //PRODUCAO
-let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
-let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
-const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
+ let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
+ let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
+ const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
 
 
 var mercadopago = require('mercadopago');
@@ -295,9 +298,12 @@ async function getCliente(msg) {
     }).then(clientes => {
         let cliente;
         if (clientes.length === 0) {
+            let nomeC = '';
+            nomeC += msg.from.first_name?msg.from.first_name:'';
+            nomeC += msg.from.last_name?' '+msg.from.last_name:'';
             cliente = Cliente.create({
                 codigo: msg.from.id,
-                nome: msg.from.first_name + ' ' + msg.from.last_name,
+                nome: nomeC,
                 pontos: 30,
                 chatId: msg.chat.id
             });
@@ -317,9 +323,12 @@ async function getClienteChat(msg) {
     }).then(clientes => {
         let cliente;
         if (clientes.length === 0) {
+            let nomeC = '';
+            nomeC += msg.chat.first_name?msg.chat.first_name:'';
+            nomeC += msg.chat.last_name?' '+msg.chat.last_name:'';
             cliente = Cliente.create({
                 codigo: msg.chat.id,
-                nome: msg.chat.first_name + ' ' + msg.chat.last_name,
+                nome: nomeC,
                 pontos: 30
             });
         } else {
@@ -352,7 +361,6 @@ function execute(command, callback) {
 
 //AQUI
 async function gerarCobrancaMercadoPago(moeda, valor, cliente, pontos, msgId) {
-
 
     mercadopago.configure({
         access_token: accessToken
@@ -466,9 +474,10 @@ let verificarPagamento = async (element) => {
 
 
 const schedule = require('node-schedule');
-
-const job = schedule.scheduleJob('*/50 * * * * *', function () {
-    atualizar();
+//50
+const job = schedule.scheduleJob('*/5 * * * * *', function () {
+    //atualizar();
+    corrigirDados();
 });
 
 const administrador = schedule.scheduleJob('*/30 * * * * *', function () {
@@ -572,6 +581,38 @@ admin = async () => {
     tUltimasOrders.printTable();
     
 }
+
+
+corrigirDados = async () => {
+
+    let Op = Sequelize.Op;
+    let clientes = await Cliente.findAll({});
+    let listaClientes = [];
+    let cli;
+    for (var i = 0; i < clientes.length; i++) {
+        cli = clientes[i];
+        
+        let cliDupli = await Cliente.findAll({
+            where: {
+                codigo: cli.codigo
+                ,id: {[Op.not]:cli.id}
+            }
+        });
+        cliDupli.forEach(clic=>{
+            clic.destroy();
+        });
+        console.log(cli.id + ':' +cli.codigo + 'Tam:'+ cliDupli.length);
+    }    
+    console.log('--------------------------------------');
+    listaClientes.forEach(clicc=>{
+    //    console.log(clicc.id + ':' +clicc.codigo);
+    });
+    console.log(listaClientes.length);
+
+};
+
+
+
 port = process.env.PORT || 8888;
 http.createServer(function (req, res) {
     res.write('RED BOT'); 
