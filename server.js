@@ -333,7 +333,7 @@ async function getClienteChat(msg) {
                 codigo: msg.chat.id,
                 nome: nomeC,
                 pontos: 30
-            });
+            }).catch(e =>{});
         } else {
             cliente = clientes[0];
         }
