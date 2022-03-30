@@ -479,8 +479,8 @@ let verificarPagamento = async (element) => {
 const schedule = require('node-schedule');
 
 const job = schedule.scheduleJob('*/50 * * * * *', function () {
-    //atualizar();
-    corrigirDados();
+    atualizar();
+    //corrigirDados();
 });
 
 const administrador = schedule.scheduleJob('*/30 * * * * *', function () {
