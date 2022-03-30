@@ -11,6 +11,7 @@ const Cliente = database.define('clientes', {
     codigo: {
         type: Sequelize.STRING,
         allowNull: false
+        //,unique: true
     },
     nome: {
         type: Sequelize.STRING,
