@@ -160,8 +160,10 @@ bot.on('callback_query', async function onCallbackQuery(callbackQuery) {
     let text = 'Qualquer coisa';
 
     if (action === 'mypoints') {
-        text = i18n.getString('label.global.points', lang) + ': ' + cliente.pontos;
-        bot.sendMessage(msg.chat.id, text);
+        if(cliente && cliente.pontos){
+            text = i18n.getString('label.global.points', lang) + ': ' + cliente.pontos;
+            bot.sendMessage(msg.chat.id, text);
+        }
     } else if (action === 'buypoints') {
         const opts = {
             reply_markup: {
