@@ -297,7 +297,7 @@ async function getCliente(msg) {
         if (clientes.length === 0) {
             cliente = Cliente.create({
                 codigo: msg.from.id,
-                nome: msg.from.first_name + ' ' + msg.from.last_name?msg.from.last_name:'',
+                nome: msg.from.first_name + ' ' + msg.from.last_name,
                 pontos: 30,
                 chatId: msg.chat.id
             });
