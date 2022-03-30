@@ -3,7 +3,7 @@
 // const YTDlpWrap = require('yt-dlp-wrap').default;
 // const ytDlpWrap = new YTDlpWrap('/usr/local/bin/yt-dlp');
 
-
+var ADMIN = '1069831649';
 
 var shortid = require('shortid');
 
@@ -14,7 +14,6 @@ const { Curl } = require('node-libcurl');
 var exec = require('child_process').exec;
 
 const TelegramBot = require('node-telegram-bot-api');
-const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
 
 const i18n = require('./i18n.js');
 
@@ -29,12 +28,21 @@ const { create } = require('domain');
 
 const { Table } = require('console-table-printer');
 
+const pretty = require('pretty-time');
 
+
+//DESENVOLVIMENTO
 // let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
 // let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
+// const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
+
+
+//PRODUCAO
 
 let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
 let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
+const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
+
 
 var mercadopago = require('mercadopago');
 
@@ -44,7 +52,7 @@ const minExpired = 30;
 
 (async () => {
     try {
-        const resultado = await database.sync();
+        const resultado = await database.sync({alter: true});
 
     } catch (error) {
         console.log(error);
@@ -67,7 +75,7 @@ bot.onText(/\/start(.*)/, (msg, match) => {
                     Indication.create({
                         cliente_origem: cliente.codigo,
                         cliente_destino: msg.from.id,
-                        pontos: 30
+                        pontos: 5
                     });
                 } else {
                     console.log('nao eh um novo usuario');
@@ -76,8 +84,12 @@ bot.onText(/\/start(.*)/, (msg, match) => {
         }    
 
     });
+});
 
-
+bot.onText(/\/changepoints452(.*)/, (msg, match) => {
+    console.log(msg);
+    console.log(match);
+    console.log(match[1].trim());
 });
 
 
@@ -91,8 +103,8 @@ bot.on('message', async (msg) => {
     let cliente = await getCliente(msg);
     if (msg.text.includes('http')) {
         if (msg.text.includes('xvideos')) {
-            console.log(new Date()+': '+msg.text);
-            if (cliente.pontos > 0) {
+            console.log(pretty(new Date().getTime())+': '+msg.text);
+            if (cliente.codigo == ADMIN ||  cliente.pontos > 0) {
                 bot.sendMessage(msg.chat.id, i18n.getString('label.global.waitextractvideo', lang));
                 executar(msg, cliente, bot);
             } else {
@@ -286,8 +298,9 @@ async function getCliente(msg) {
         if (clientes.length === 0) {
             cliente = Cliente.create({
                 codigo: msg.from.id,
-                nome: msg.from.first_name + ' ' + msg.from.last_name,
-                pontos: 30
+                nome: msg.from.first_name + ' ' + msg.from.last_name?msg.from.last_name:'',
+                pontos: 30,
+                chatId: msg.chat.id
             });
         } else {
             cliente = clientes[0];
@@ -496,6 +509,14 @@ admin = async () => {
 
     let clientes = await Cliente.count({});
 
+    let ultimosClientes = await Cliente.findAll({limit: 5,order: [['id', 'DESC']]}).catch(e=>console.log(e));
+
+    let clientesMaisPontos = await Cliente.findAll({limit: 5,order: [['pontos', 'DESC']]}).catch(e=>console.log(e));
+
+    let clientesMenosPontos = await Cliente.findAll({limit: 5,order: [['pontos', 'ASC']]}).catch(e=>console.log(e));
+
+    let ultimasOrders = await Order.findAll({limit: 5,order: [['id', 'DESC']]}).catch(e=>console.log(e));
+
 
 
     //add rows with color
@@ -513,10 +534,44 @@ admin = async () => {
 
     p.addRow({ cliente: 'Valor Total Recebido: ', value: sumOrdersPay }, { color: 'green' });
 
-
-
-    //print
     p.printTable();
+
+    const tClientes = new Table();
+    ultimosClientes.forEach(cliente=>{
+        tClientes.addRow({ id: cliente.id, codigo: cliente.codigo, nome:cliente.nome,pontos:cliente.pontos}, { color: 'green' });
+    });
+    console.log('---------- Ultimos Clientes ----------------')
+    tClientes.printTable();
+
+    const tClientesMaisPontos = new Table();
+    clientesMaisPontos.forEach(cliente=>{
+        if(cliente.codigo != ADMIN){
+            tClientesMaisPontos.addRow({ id: cliente.id, codigo: cliente.codigo, nome:cliente.nome,pontos:cliente.pontos}, { color: 'yellow' });
+        }
+    });
+    console.log('---------- Clientes Mais Pontos ----------------')
+    tClientesMaisPontos.printTable();
+
+    const tClientesMenosPontos = new Table();
+    clientesMenosPontos.forEach(cliente=>{
+        if(cliente.codigo != ADMIN){   
+           tClientesMenosPontos.addRow({ id: cliente.id, codigo: cliente.codigo, nome:cliente.nome,pontos:cliente.pontos}, { color: 'red' });
+        }   
+    });
+    console.log('---------- Clientes Menos Pontos ----------------')
+    tClientesMenosPontos.printTable();
+   
+    
+    
+    const tUltimasOrders = new Table();
+
+    ultimasOrders.forEach(async (order)=>{
+        tUltimasOrders.addRow({ id: order.id, data:pretty(order.createdAt.getTime()),status:order.status, cliente: order.cliente, transacao:order.transacao,valor:order.valor,pontos:order.pontos}, { color: 'blue' });
+    });
+    
+    console.log('---------- Ultimas transações ----------------')
+    tUltimasOrders.printTable();
+    
 }
 port = process.env.PORT || 8888;
 http.createServer(function (req, res) {

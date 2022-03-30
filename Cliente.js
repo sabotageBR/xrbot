@@ -18,7 +18,10 @@ const Cliente = database.define('clientes', {
     },
     pontos: {
         type: Sequelize.INTEGER
-    }
+    },
+    chatId: {
+        type: Sequelize.STRING
+    },
 })
  
 module.exports = Cliente;
