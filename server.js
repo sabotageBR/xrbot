@@ -288,9 +288,6 @@ async function descontarPonto(cliente) {
     if(cliente.codigo != ADMIN){
         cliente.pontos = cliente.pontos - 1;
         cliente.save();
-    }else{
-        cliente.pontos = 0;
-        cliente.save();
     }
     
 }
