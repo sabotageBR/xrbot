@@ -119,7 +119,7 @@ bot.on('message', async (msg) => {
         }
 
     } else {
-        console.log('CHAT: '+msg.text);
+        console.log(cliente.nome +': '+msg.text);
         const opts = {
             reply_markup: {
                 inline_keyboard: [
@@ -285,8 +285,14 @@ async function executar(msg, cliente, bot) {
 }
 
 async function descontarPonto(cliente) {
-    cliente.pontos = cliente.pontos - 1;
-    cliente.save();
+    if(cliente.codigo != ADMIN){
+        cliente.pontos = cliente.pontos - 1;
+        cliente.save();
+    }else{
+        cliente.pontos = 0;
+        cliente.save();
+    }
+    
 }
 
 async function getCliente(msg) {
