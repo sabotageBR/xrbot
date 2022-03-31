@@ -297,7 +297,6 @@ async function descontarPonto(cliente) {
 }
 
 async function getCliente(msg) {
-
     return Cliente.findAll({
         where: {
             codigo: msg.from.id
@@ -313,7 +312,7 @@ async function getCliente(msg) {
                 nome: nomeC,
                 pontos: 30,
                 chatId: msg.chat.id
-            });
+            }).catch(e =>{});
         } else {
             cliente = clientes[0];
         }
@@ -528,7 +527,7 @@ admin = async () => {
 
     let clientesMaisPontos = await Cliente.findAll({limit: 5,order: [['pontos', 'DESC']]}).catch(e=>console.log(e));
 
-    let clientesMenosPontos = await Cliente.findAll({limit: 5,order: [['pontos', 'ASC']]}).catch(e=>console.log(e));
+    let clientesMenosPontos = await Cliente.findAll({limit: 9,order: [['pontos', 'ASC']]}).catch(e=>console.log(e));
 
     let ultimasOrders = await Order.findAll({limit: 5,order: [['id', 'DESC']]}).catch(e=>console.log(e));
 
