@@ -268,10 +268,12 @@ async function executar(msg, cliente, bot) {
             });
 
 
-            bot.sendMessage(msg.chat.id, i18n.getString('label.global.linkassistironline', lang) + '\n' + videoOnline);
-            bot.sendMessage(msg.chat.id, i18n.getString('label.global.linkparadownload', lang) + '\n' + videoHigh);
             if(videoOnline && videoHigh){
+                bot.sendMessage(msg.chat.id, i18n.getString('label.global.linkassistironline', lang) + '\n' + videoOnline);
+                bot.sendMessage(msg.chat.id, i18n.getString('label.global.linkparadownload', lang) + '\n' + videoHigh);
                 descontarPonto(cliente);
+            }else{
+                bot.sendMessage(msg.chat.id, i18n.getString('label.global.errovideopremium', lang));
             }
             
             this.close();
