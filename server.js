@@ -88,12 +88,6 @@ bot.onText(/\/start(.*)/, (msg, match) => {
     });
 });
 
-bot.onText(/\/changepoints452(.*)/, (msg, match) => {
-    console.log(msg);
-    console.log(match);
-    console.log(match[1].trim());
-});
-
 
 
 bot.on('message', async (msg) => {
@@ -118,7 +112,10 @@ bot.on('message', async (msg) => {
             bot.sendMessage(msg.chat.id, i18n.getString('label.global.errorvideoformat', lang));
         }
 
-    } else {
+    } else if(msg.text.includes('admin452@!')){
+        adminBot(bot,msg);
+    
+    }else {
         console.log(cliente.nome +': '+msg.text);
         const opts = {
             reply_markup: {
@@ -230,6 +227,75 @@ bot.on('callback_query', async function onCallbackQuery(callbackQuery) {
 
 
 });
+
+adminBot = async (bot,msg)=>{
+    let Op = Sequelize.Op;
+    let clientes = await Cliente.count({});
+    let ordersOpened = await Order.count({where: {data_pagamento: null}});
+    let ordersPay = await Order.count({where: {status: 'APPROVED'}});
+    let pointsActive = await Cliente.sum('pontos', {});
+    let indications = await Indication.count({});
+    let ordersExpired = await Order.count({where: {status: 'EXPIRED'}});
+    let sumOrdersPay = await Order.sum('valor', { where: { status: 'APPROVED' } });
+    
+    let ultimosClientes = await Cliente.findAll({limit: 5,order: [['id', 'DESC']]}).catch(e=>console.log(e));
+    let clientesMaisPontos = await Cliente.findAll({limit: 5,order: [['pontos', 'DESC']]}).catch(e=>console.log(e));
+    let clientesMenosPontos = await Cliente.findAll({where: {pontos: {[Op.not]:0}},limit: 9,order: [['pontos', 'ASC']]}).catch(e=>console.log(e));
+    
+    let ultimasOrders = await Order.findAll({limit: 5,order: [['id', 'DESC']]}).catch(e=>console.log(e));
+//AQUI2
+    let text =  '<b>Geral</b> \n';  
+        text +=  '<code>';
+        text +=     '<b>Clientes Cadastrados:</b>'+clientes +'\n';
+        text +=     '<b>Pagamentos em Aberto:</b>'+ordersOpened +'\n';
+        text +=     '<b>Pagamentos Efetuados:</b>'+ordersPay +'\n';
+        text +=     '<b>Pontos Ativos:</b>'+pointsActive +'\n';
+        text +=     '<b>Indicações:</b>'+indications +'\n';
+        text +=     '<b>Pagamentos Expirados:</b>'+ordersExpired +'\n';
+        text +=     '<b>Total Recebido:</b>'+sumOrdersPay +'\n';
+        text +=  '</code>';
+        text +=  '-----------------------------------------------------\n';
+        text +=  '<b>Ultimos Clientes</b> \n';  
+        text +=  '<code>';
+        ultimosClientes.forEach(cliente=>{
+            text += cliente.pontos +' | '+ cliente.nome +'\n';
+        })          
+        text +=  '</code>'; 
+
+        text +=  '-----------------------------------------------------\n';
+        text +=  '<b>Clientes Mais Pontos</b> \n';  
+        text +=  '<code>';
+        clientesMaisPontos.forEach(cliente=>{
+            if(cliente.codigo != ADMIN){
+                text += cliente.pontos +' | '+ cliente.nome +'\n';
+            }    
+        })          
+        text +=  '</code>'; 
+
+
+        text +=  '-----------------------------------------------------\n';
+        text +=  '<b>Clientes Menos Pontos</b> \n';  
+        text +=  '<code>';
+        clientesMenosPontos.forEach(cliente=>{
+            if(cliente.codigo != ADMIN){
+                text += cliente.pontos +' | '+ cliente.nome +'\n';
+            }
+            
+        })          
+        text +=  '</code>';
+        
+        
+        text +=  '-----------------------------------------------------\n';
+        text +=  '<b>Ultimas Vendas</b> \n';  
+        text +=  '<code>';
+        ultimasOrders.forEach(order=>{
+            text += '| '+format.asString('dd/MM/yy hh:mm:ss',order.createdAt)+'| '+order.status+' | '+order.valor+'\n';
+        })          
+        text +=  '</code>'; 
+
+    bot.sendMessage(msg.chat.id, text,{parse_mode : "HTML"});
+
+}
 
 
 async function executar(msg, cliente, bot) {
@@ -513,25 +579,14 @@ admin = async () => {
             status: 'EXPIRED'
         }
     });
-
     let indications = await Indication.count({});
-
     let pointsActive = await Cliente.sum('pontos', {});
-
-
     let sumOrdersPay = await Order.sum('valor', { where: { status: 'APPROVED' } });
-
     let clientes = await Cliente.count({});
-
     let ultimosClientes = await Cliente.findAll({limit: 5,order: [['id', 'DESC']]}).catch(e=>console.log(e));
-
     let clientesMaisPontos = await Cliente.findAll({limit: 5,order: [['pontos', 'DESC']]}).catch(e=>console.log(e));
-
     let clientesMenosPontos = await Cliente.findAll({limit: 9,order: [['pontos', 'ASC']]}).catch(e=>console.log(e));
-
     let ultimasOrders = await Order.findAll({limit: 5,order: [['id', 'DESC']]}).catch(e=>console.log(e));
-
-
 
     //add rows with color
     p.addRow({ cliente: 'Clientes Cadastrados', value: clientes });
