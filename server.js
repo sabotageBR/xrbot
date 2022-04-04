@@ -99,7 +99,7 @@ bot.on('message', async (msg) => {
     let cliente = await getCliente(msg);
     if (msg.text.includes('http')) {
         if (msg.text.includes('xvideos')) {
-            console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+cliente.nome+': '+msg.text);
+            console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+cliente.nome+' ('+cliente.pontos+'): '+msg.text);
             if (cliente.codigo == ADMIN ||  cliente.pontos > 0) {
                 bot.sendMessage(msg.chat.id, i18n.getString('label.global.waitextractvideo', lang));
                 executar(msg, cliente, bot);
