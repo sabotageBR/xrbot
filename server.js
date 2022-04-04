@@ -254,7 +254,7 @@ adminBot = async (bot,msg)=>{
         text +=     '<b>Pagamentos Expirados:</b>'+ordersExpired +'\n';
         text +=     '<b>Total Recebido:</b>'+sumOrdersPay +'\n';
         text +=  '</code>';
-        text +=  '-----------------------------------------------------\n';
+        text +=  '--------------------------------------------\n';
         text +=  '<b>Ultimos Clientes</b> \n';  
         text +=  '<code>';
         ultimosClientes.forEach(cliente=>{
@@ -262,7 +262,7 @@ adminBot = async (bot,msg)=>{
         })          
         text +=  '</code>'; 
 
-        text +=  '-----------------------------------------------------\n';
+        text +=  '--------------------------------------------\n';
         text +=  '<b>Clientes Mais Pontos</b> \n';  
         text +=  '<code>';
         clientesMaisPontos.forEach(cliente=>{
@@ -273,7 +273,7 @@ adminBot = async (bot,msg)=>{
         text +=  '</code>'; 
 
 
-        text +=  '-----------------------------------------------------\n';
+        text +=  '--------------------------------------------\n';
         text +=  '<b>Clientes Menos Pontos</b> \n';  
         text +=  '<code>';
         clientesMenosPontos.forEach(cliente=>{
@@ -285,7 +285,7 @@ adminBot = async (bot,msg)=>{
         text +=  '</code>';
         
         
-        text +=  '-----------------------------------------------------\n';
+        text +=  '--------------------------------------------\n';
         text +=  '<b>Ultimas Vendas</b> \n';  
         text +=  '<code>';
         ultimasOrders.forEach(order=>{
