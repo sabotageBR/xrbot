@@ -318,7 +318,7 @@ async function executar(msg, cliente, bot) {
             let title;
 
             data.split(/\r?\n/).forEach(function (line) {
-                console.log(line);
+                //console.log(line);
                 if (line.includes('html5player.setVideoTitle(')) {
                     title = line.substring(line.indexOf('VideoTitle(') + 12, line.length - 3);
 
