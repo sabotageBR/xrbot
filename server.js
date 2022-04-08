@@ -141,7 +141,8 @@ bot.on('message', async (msg) => {
             }
         };
 
-        let hello = i18n.getString('label.global.hi', lang) + ', ' + cliente.nome + '\n' +
+        let hello = 'ESTAMOS EM MANUTENÇÃO... AGUARDE UM MOMENTO'
+        hello += i18n.getString('label.global.hi', lang) + ', ' + cliente.nome + '\n' +
             i18n.getString('label.global.pasteurl', lang);
         bot.sendMessage(chatId, hello, opts);
     }
