@@ -35,9 +35,9 @@ const Sequelize = require('sequelize');
 
 
 //DESENVOLVIMENTO
-// let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
-// let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
-// const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
+//  let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
+//  let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
+//  const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
 
 
 //PRODUCAO
@@ -141,8 +141,8 @@ bot.on('message', async (msg) => {
             }
         };
 
-        let hello = 'ESTAMOS EM MANUTENÇÃO... AGUARDE UM MOMENTO \n';
-        hello += i18n.getString('label.global.hi', lang) + ', ' + cliente.nome + '\n' +
+        //let hello = 'ESTAMOS EM MANUTENÇÃO... AGUARDE UM MOMENTO \n';
+        let hello = i18n.getString('label.global.hi', lang) + ', ' + cliente.nome + '\n' +
             i18n.getString('label.global.pasteurl', lang);
         bot.sendMessage(chatId, hello, opts);
     }
@@ -318,7 +318,7 @@ async function executar(msg, cliente, bot) {
             let title;
 
             data.split(/\r?\n/).forEach(function (line) {
-
+                console.log(line);
                 if (line.includes('html5player.setVideoTitle(')) {
                     title = line.substring(line.indexOf('VideoTitle(') + 12, line.length - 3);
 
