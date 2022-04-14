@@ -35,15 +35,15 @@ const Sequelize = require('sequelize');
 
 
 //DESENVOLVIMENTO
-//  let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
-//  let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
-//  const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
+  let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
+  let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
+  const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
 
 
 //PRODUCAO
- let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
- let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
- const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
+// let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
+// let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
+// const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
 
 
 var mercadopago = require('mercadopago');
@@ -202,19 +202,19 @@ bot.on('callback_query', async function onCallbackQuery(callbackQuery) {
    
     } else if (action === '5dolar') {
         bot.sendMessage(msg.chat.id, i18n.getString('label.global.messagebuy5dolar', lang));
-        let uid = await gerarCobrancaMercadoPago('BRL', '25.00', cliente.codigo, 55, msg.chat.id);
+        let uid = await gerarCobrancaMercadoPago('BRL', '15.00', cliente.codigo, 55, msg.chat.id);
         bot.sendMessage(msg.chat.id, 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=' + uid);
         bot.sendMessage(msg.chat.id, i18n.getString('label.global.messagebuyafter', lang));
     
     } else if (action === '10dolar') {
         bot.sendMessage(msg.chat.id, i18n.getString('label.global.messagebuy10dolar', lang));
-        let uid = await gerarCobrancaMercadoPago('BRL', '50.00', cliente.codigo, 120, msg.chat.id);
+        let uid = await gerarCobrancaMercadoPago('BRL', '30.00', cliente.codigo, 120, msg.chat.id);
         bot.sendMessage(msg.chat.id, 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=' + uid);
         bot.sendMessage(msg.chat.id, i18n.getString('label.global.messagebuyafter', lang));
    
     } else if (action === '20dolar') {
         bot.sendMessage(msg.chat.id, i18n.getString('label.global.messagebuy20dolar', lang));
-        let uid = await gerarCobrancaMercadoPago('BRL', '100.00', cliente.codigo, 250, msg.chat.id);
+        let uid = await gerarCobrancaMercadoPago('BRL', '60.00', cliente.codigo, 250, msg.chat.id);
         bot.sendMessage(msg.chat.id, 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=' + uid);
         bot.sendMessage(msg.chat.id, i18n.getString('label.global.messagebuyafter', lang));
 
@@ -259,7 +259,7 @@ adminBot = async (bot,msg)=>{
         text +=  '<b>Ultimos Clientes</b> \n';  
         text +=  '<code>';
         ultimosClientes.forEach(cliente=>{
-            text += cliente.pontos +' | '+ cliente.nome +'\n';
+            text += cliente.pontos +' | '+ cliente.codigo +' | '+ cliente.nome+'\n';
         })          
         text +=  '</code>'; 
 
@@ -268,7 +268,7 @@ adminBot = async (bot,msg)=>{
         text +=  '<code>';
         clientesMaisPontos.forEach(cliente=>{
             if(cliente.codigo != ADMIN){
-                text += cliente.pontos +' | '+ cliente.nome +'\n';
+                text += cliente.pontos +' | '+ cliente.codigo +' | '+ cliente.nome+'\n';
             }    
         })          
         text +=  '</code>'; 
@@ -279,7 +279,7 @@ adminBot = async (bot,msg)=>{
         text +=  '<code>';
         clientesMenosPontos.forEach(cliente=>{
             if(cliente.codigo != ADMIN){
-                text += cliente.pontos +' | '+ cliente.nome +'\n';
+                text += cliente.pontos +' | '+ cliente.codigo +' | '+ cliente.nome+'\n';
             }
             
         })          
@@ -289,10 +289,14 @@ adminBot = async (bot,msg)=>{
         text +=  '--------------------------------------------\n';
         text +=  '<b>Ultimas Vendas</b> \n';  
         text +=  '<code>';
-        ultimasOrders.forEach(order=>{
-            text += '| '+format.asString('dd/MM/yy hh:mm:ss',order.createdAt)+'| '+order.status+' | '+order.valor+'\n';
+        ultimasOrders.forEach(order=> {
+
+
+            text += '| '+format.asString('dd/MM/yy hh:mm:ss',order.createdAt)+'| '+order.status+' | '+order.valor+' | '+order.cliente+'\n';
         })          
         text +=  '</code>'; 
+
+
 
     bot.sendMessage(msg.chat.id, text,{parse_mode : "HTML"});
 
