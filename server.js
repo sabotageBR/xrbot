@@ -290,9 +290,7 @@ adminBot = async (bot,msg)=>{
         text +=  '<b>Ultimas Vendas</b> \n';  
         text +=  '<code>';
         ultimasOrders.forEach(order=> {
-
-
-            text += '| '+format.asString('dd/MM/yy hh:mm:ss',order.createdAt)+'| '+order.status+' | '+order.valor+' | '+order.cliente+'\n';
+            text += '| '+order.createdAt.toLocaleString("pt-BR", {timeZone: "America/Sao_Paulo"})+'| '+order.status+' | '+order.valor+' | '+order.cliente+'\n';
         })          
         text +=  '</code>'; 
 
