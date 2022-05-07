@@ -32,12 +32,12 @@ const format = require('date-format');
 
 const Sequelize = require('sequelize');
 
-
+var promocao = 2;
 
 //DESENVOLVIMENTO
-//  let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
-//  let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
-//  const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
+// let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
+// let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
+// const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
 
 
 //PRODUCAO
@@ -72,7 +72,7 @@ bot.onText(/\/start(.*)/, (msg, match) => {
         if(cliente && cliente.codigo){
             getClienteByCodigo(msg.from.id).then(novoCliente => {
                 if (novoCliente == null && msg.from.id != cliente.codigo) {
-                    cliente.pontos = cliente.pontos + 20;
+                    cliente.pontos = cliente.pontos + 5;
                     cliente.save();
                     Indication.create({
                         cliente_origem: cliente.codigo,
@@ -91,11 +91,33 @@ bot.onText(/\/start(.*)/, (msg, match) => {
 
 
 bot.on('message', async (msg) => {
-
     lang = msg.from.language_code;
+    const opts = {
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    {
+                        text: '💰 ' + i18n.getString('label.global.mypoints', lang),
+                        callback_data: 'mypoints'
+                    },
+                    {
+                        text: '💸 ' + i18n.getString('label.global.buypoints', lang),
+                        callback_data: 'buypoints'
+                    }
+                ],
+                [
+                    {
+                        text: '👥 ' + i18n.getString('label.global.indication', lang),
+                        callback_data: 'indication'
+                    }
+
+                ]
+            ]
+        }
+    };
 
     const chatId = msg.chat.id;
-
+    
     let cliente = await getCliente(msg);
     if (msg.text.includes('http')) {
         if (msg.text.includes('xvideos')) {
@@ -104,7 +126,7 @@ bot.on('message', async (msg) => {
                 bot.sendMessage(msg.chat.id, i18n.getString('label.global.waitextractvideo', lang));
                 executar(msg, cliente, bot);
             } else {
-                bot.sendMessage(msg.chat.id, i18n.getString('label.global.insufficientpoints', lang));
+                bot.sendMessage(msg.chat.id, i18n.getString('label.global.insufficientpoints', lang),opts);
             }
         }
         else {
@@ -117,31 +139,13 @@ bot.on('message', async (msg) => {
     
     }else {
         console.log(cliente.nome +': '+msg.text);
-        const opts = {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: '💰 ' + i18n.getString('label.global.mypoints', lang),
-                            callback_data: 'mypoints'
-                        },
-                        {
-                            text: '💸 ' + i18n.getString('label.global.buypoints', lang),
-                            callback_data: 'buypoints'
-                        }
-                    ],
-                    [
-                        {
-                            text: '👥 ' + i18n.getString('label.global.indication', lang),
-                            callback_data: 'indication'
-                        }
-
-                    ]
-                ]
-            }
-        };
+        
 
         //let hello = 'ESTAMOS EM MANUTENÇÃO... AGUARDE UM MOMENTO \n';
+
+        let promo = i18n.getString('label.global.promotion', lang);
+        await bot.sendMessage(chatId, promo);
+
         let hello = i18n.getString('label.global.hi', lang) + ', ' + cliente.nome + '\n' +
             i18n.getString('label.global.pasteurl', lang);
         bot.sendMessage(chatId, hello, opts);
@@ -190,8 +194,9 @@ bot.on('callback_query', async function onCallbackQuery(callbackQuery) {
                 ]
             }
         };
-
+        let promo = i18n.getString('label.global.promotion', lang);
         let hello = i18n.getString('label.global.howmanypointsbuy', lang);
+        await bot.sendMessage(msg.chat.id, promo);
         bot.sendMessage(msg.chat.id, hello, opts);
 
     } else if (action === '1dolar') {
@@ -502,11 +507,11 @@ let captureOrder = async function (element) {
              element.save();
 
             let clienteEspera = await getClienteByCodigo(element.cliente);
-            clienteEspera.pontos = clienteEspera.pontos + element.pontos;
+            clienteEspera.pontos = clienteEspera.pontos + (element.pontos * promocao);
             clienteEspera.save();
 
             enviarMensagemAtivo(element.id_chat, i18n.getString('label.global.messagebuycongratulation', lang));
-            enviarMensagemAtivo(element.id_chat, i18n.getString('label.global.messagebuypointscongratulation', lang) + ' ' + element.pontos + ' ' + i18n.getString('label.global.points', lang));
+            enviarMensagemAtivo(element.id_chat, i18n.getString('label.global.messagebuypointscongratulation', lang) + ' ' + (element.pontos * promocao) + ' ' + i18n.getString('label.global.points', lang));
 
             }
         });
