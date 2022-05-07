@@ -138,7 +138,7 @@ bot.on('message', async (msg) => {
         adminBot(bot,msg);
     
     }else {
-        console.log(cliente.nome +'('+cliente.pontos+'): '+msg.text);
+        console.log(cliente.nome +' ('+cliente.pontos+'): '+msg.text);
 
         //let hello = 'ESTAMOS EM MANUTENÇÃO... AGUARDE UM MOMENTO \n';
 
