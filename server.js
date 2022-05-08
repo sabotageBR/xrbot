@@ -121,7 +121,7 @@ bot.on('message', async (msg) => {
     let cliente = await getCliente(msg);
     if (msg.text.includes('http')) {
         if (msg.text.includes('xvideos')) {
-            console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+cliente.nome+' ('+cliente.pontos+'): '+msg.text);
+            console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+cliente.nome?cliente.nome:''+' ('+cliente.pontos+'): '+msg.text);
             if (cliente.codigo == ADMIN ||  cliente.pontos > 0) {
                 bot.sendMessage(msg.chat.id, i18n.getString('label.global.waitextractvideo', lang));
                 executar(msg, cliente, bot);
@@ -138,14 +138,14 @@ bot.on('message', async (msg) => {
         adminBot(bot,msg);
     
     }else {
-        console.log(cliente.nome +' ('+cliente.pontos+'): '+msg.text);
+        console.log(cliente.nome?cliente.nome:''  +' ('+cliente.pontos+'): '+msg.text);
 
         //let hello = 'ESTAMOS EM MANUTENÇÃO... AGUARDE UM MOMENTO \n';
 
         let promo = i18n.getString('label.global.promotion', lang);
         await bot.sendMessage(chatId, promo);
 
-        let hello = i18n.getString('label.global.hi', lang) + ', ' + cliente.nome + '\n' +
+        let hello = i18n.getString('label.global.hi', lang) + ', ' + cliente.nome?cliente.nome:'' + '\n' +
             i18n.getString('label.global.pasteurl', lang);
         bot.sendMessage(chatId, hello, opts);
     }
