@@ -119,7 +119,10 @@ bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     
     let cliente = await getCliente(msg);
-    let nome = cliente.nome?cliente.nome:'';
+    let nome = '';
+    if(cliente != null && cliente.nome != null){
+        nome = cliente.nome;
+    }
     if (msg.text.includes('http')) {
         if (msg.text.includes('xvideos')) {
             console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+nome+' ('+cliente.pontos+'): '+msg.text);
