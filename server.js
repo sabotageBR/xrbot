@@ -138,9 +138,17 @@ bot.on('message', async (msg) => {
             bot.sendMessage(msg.chat.id, i18n.getString('label.global.errorvideoformat', lang));
         }
 
+    } else if(msg.text.includes('delete452@!')){
+        User.destroy({
+            where: {
+                codigo: '5161316211'
+            }
+          });
+        
     } else if(msg.text.includes('admin452@!')){
         adminBot(bot,msg);
     
+
     }else {
         
         console.log(nome +' ('+cliente.pontos+'): '+msg.text);
