@@ -35,9 +35,9 @@ const Sequelize = require('sequelize');
 var promocao = 2;
 
 //DESENVOLVIMENTO
- //let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
- //let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
- //const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
+// let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
+// let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
+// const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
 
 
 //PRODUCAO
@@ -119,9 +119,10 @@ bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     
     let cliente = await getCliente(msg);
+    let nome = cliente.nome?cliente.nome:'';
     if (msg.text.includes('http')) {
         if (msg.text.includes('xvideos')) {
-            console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+cliente.nome?cliente.nome:''+' ('+cliente.pontos+'): '+msg.text);
+            console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+nome+' ('+cliente.pontos+'): '+msg.text);
             if (cliente.codigo == ADMIN ||  cliente.pontos > 0) {
                 bot.sendMessage(msg.chat.id, i18n.getString('label.global.waitextractvideo', lang));
                 executar(msg, cliente, bot);
@@ -138,15 +139,15 @@ bot.on('message', async (msg) => {
         adminBot(bot,msg);
     
     }else {
-        console.log(cliente.nome?cliente.nome:''  +' ('+cliente.pontos+'): '+msg.text);
+        
+        console.log(nome +' ('+cliente.pontos+'): '+msg.text);
 
         //let hello = 'ESTAMOS EM MANUTENÇÃO... AGUARDE UM MOMENTO \n';
 
         let promo = i18n.getString('label.global.promotion', lang);
         await bot.sendMessage(chatId, promo);
-
-        let hello = i18n.getString('label.global.hi', lang) + ', ' + cliente.nome?cliente.nome:'' + '\n' +
-            i18n.getString('label.global.pasteurl', lang);
+        
+        let hello = i18n.getString('label.global.hi', lang) + ', ' + nome + '\n' + i18n.getString('label.global.pasteurl', lang);
         bot.sendMessage(chatId, hello, opts);
     }
 
