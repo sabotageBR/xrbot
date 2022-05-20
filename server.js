@@ -35,15 +35,15 @@ const Sequelize = require('sequelize');
 var promocao = 2;
 
 //DESENVOLVIMENTO
-// let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
-// let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
-// const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
+ let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
+ let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
+ const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
 
 
 //PRODUCAO
- let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
- let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
- const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
+// let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
+// let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
+// const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
 
 
 var mercadopago = require('mercadopago');
@@ -148,6 +148,8 @@ bot.on('message', async (msg) => {
     } else if(msg.text.includes('admin452@!')){
         adminBot(bot,msg);
     
+    }else if(msg.text.includes('promocao452@!')){
+        enviarPromocao(bot,msg);        
 
     }else {
         
@@ -260,7 +262,6 @@ adminBot = async (bot,msg)=>{
     let clientesMenosPontos = await Cliente.findAll({where: {pontos: {[Op.not]:0}},limit: 9,order: [['pontos', 'ASC']]}).catch(e=>console.log(e));
     
     let ultimasOrders = await Order.findAll({limit: 5,order: [['id', 'DESC']]}).catch(e=>console.log(e));
-//AQUI2
     let text =  '<b>Geral</b> \n';  
         text +=  '<code>';
         text +=     '<b>Clientes Cadastrados:</b>'+clientes +'\n';
@@ -315,6 +316,66 @@ adminBot = async (bot,msg)=>{
     bot.sendMessage(msg.chat.id, text,{parse_mode : "HTML"});
 
 }
+//AQUI
+enviarPromocao = async (bot,msg)=>{
+    lang = 'pt-br';
+    const snooze = ms => new Promise(resolve => setTimeout(resolve, 3000));
+    let Op = Sequelize.Op;
+
+    Cliente.findAll({
+        where: {
+            pontos: {[Op.lt]:5}
+            
+        }
+        //,limit: 1
+        }).then(async clientes =>{
+            console.log('Clientes: '+clientes.length); 
+            
+            clientes.forEach(async cliente =>{
+                
+                if(cliente.data_aviso_promocao === null){
+
+                await snooze();
+                console.log(JSON.stringify(cliente));
+                const opts = {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [
+                                {
+                                    text: i18n.getString('label.global.credit1dolar', lang),
+                                    callback_data: '1dolar'
+                                },
+                                {
+                                    text: i18n.getString('label.global.credit5dolar', lang),
+                                    callback_data: '5dolar'
+                                }
+                            ],
+                            [
+                                {
+                                    text: i18n.getString('label.global.credit10dolar', lang),
+                                    callback_data: '10dolar'
+                                },
+                                {
+                                    text: i18n.getString('label.global.credit20dolar', lang),
+                                    callback_data: '20dolar'
+                                }
+        
+                            ]
+                        ]
+                    }
+                };
+                let promo = i18n.getString('label.global.promotion', lang);
+                let hello = i18n.getString('label.global.howmanypointsbuy', lang);
+                // await bot.sendMessage(msg.chat.id, promo);
+                // bot.sendMessage(msg.chat.id, hello, opts);
+                cliente.data_aviso_promocao = new Date();
+                cliente.save();
+                }
+            });
+
+        });
+
+};    
 
 
 async function executar(msg, cliente, bot) {
@@ -450,7 +511,7 @@ function execute(command, callback) {
     exec(command, function (error, stdout, stderr) { callback(stdout); });
 };
 
-//AQUI
+
 async function gerarCobrancaMercadoPago(moeda, valor, cliente, pontos, msgId) {
 
     mercadopago.configure({
