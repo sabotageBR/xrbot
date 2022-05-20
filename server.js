@@ -370,7 +370,7 @@ enviarPromocao = async (bot,msg)=>{
                 cliente.data_aviso_promocao = new Date();
                 cliente.save();
                 } catch (error) {
-                    console.log(error);
+                    console.log(error.message);
                     console.log('Erro ao enviar a promoção para o cliente: '+cliente.nome);    
                 }
             });
