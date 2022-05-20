@@ -23,6 +23,9 @@ const Cliente = database.define('clientes', {
     chatId: {
         type: Sequelize.STRING
     },
+    data_aviso_promocao: {
+        type: Sequelize.DATE
+    },
 })
  
 module.exports = Cliente;

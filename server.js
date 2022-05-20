@@ -32,18 +32,20 @@ const format = require('date-format');
 
 const Sequelize = require('sequelize');
 
+const moment = require("moment");
+
 var promocao = 2;
 
 //DESENVOLVIMENTO
- let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
- let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
- const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
+// let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
+// let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
+// const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
 
 
 //PRODUCAO
-// let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
-// let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
-// const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
+ let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
+ let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
+ const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
 
 
 var mercadopago = require('mercadopago');
@@ -319,24 +321,20 @@ adminBot = async (bot,msg)=>{
 //AQUI
 enviarPromocao = async (bot,msg)=>{
     lang = 'pt-br';
-    const snooze = ms => new Promise(resolve => setTimeout(resolve, 3000));
     let Op = Sequelize.Op;
 
     Cliente.findAll({
+        logging: console.log,
         where: {
-            pontos: {[Op.lt]:5}
-            
+            pontos: {[Op.lt]:5},
+            [Op.or]: [{data_aviso_promocao: null}, {data_aviso_promocao:  { [Sequelize.Op.lte]: (moment().subtract(7, 'days').toDate()) }}]
         }
-        //,limit: 1
+       // ,limit: 1
         }).then(async clientes =>{
             console.log('Clientes: '+clientes.length); 
-            
             clientes.forEach(async cliente =>{
-                
-                if(cliente.data_aviso_promocao === null){
-
-                await snooze();
-                console.log(JSON.stringify(cliente));
+                try {
+                console.log('CLIENTE: '+cliente.nome+ ', PONTOS: '+cliente.pontos);
                 const opts = {
                     reply_markup: {
                         inline_keyboard: [
@@ -366,13 +364,18 @@ enviarPromocao = async (bot,msg)=>{
                 };
                 let promo = i18n.getString('label.global.promotion', lang);
                 let hello = i18n.getString('label.global.howmanypointsbuy', lang);
-                // await bot.sendMessage(msg.chat.id, promo);
-                // bot.sendMessage(msg.chat.id, hello, opts);
+                await bot.sendMessage(cliente.chatId, promo);
+                await bot.sendMessage(cliente.chatId, hello, opts);
                 cliente.data_aviso_promocao = new Date();
                 cliente.save();
+                } catch (error) {
+                    console.log('Erro ao enviar a promoção para o cliente: '+cliente.nome);    
                 }
             });
 
+        }).catch(e =>{
+            console.log('ERROR:');
+            console.log(e);
         });
 
 };    
