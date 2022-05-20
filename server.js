@@ -326,7 +326,7 @@ enviarPromocao = async (bot,msg)=>{
     Cliente.findAll({
         logging: console.log,
         where: {
-            pontos: {[Op.lt]:15},
+            pontos: {[Op.lt]:25},
             [Op.or]: [{data_aviso_promocao: null}, {data_aviso_promocao:  { [Sequelize.Op.lte]: (moment().subtract(15, 'days').toDate()) }}]
         }
        // ,limit: 1
