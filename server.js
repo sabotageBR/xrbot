@@ -332,6 +332,7 @@ enviarPromocao = async (bot,msg)=>{
        // ,limit: 1
         }).then(async clientes =>{
             console.log('Clientes: '+clientes.length); 
+            await bot.sendMessage(msg.from.id, 'Clientes: '+clientes.length);
             clientes.forEach(async cliente =>{
                 try {
                 console.log('CLIENTE: '+cliente.nome+ ', PONTOS: '+cliente.pontos);
