@@ -263,7 +263,7 @@ adminBot = async (bot,msg)=>{
     let clientesMaisPontos = await Cliente.findAll({limit: 5,order: [['pontos', 'DESC']]}).catch(e=>console.log(e));
     let clientesMenosPontos = await Cliente.findAll({where: {pontos: {[Op.not]:0}},limit: 9,order: [['pontos', 'ASC']]}).catch(e=>console.log(e));
     
-    let ultimasOrders = await Order.findAll({limit: 5,order: [['id', 'DESC']]}).catch(e=>console.log(e));
+    let ultimasOrders = await Order.findAll({limit: 10,order: [['id', 'DESC']]}).catch(e=>console.log(e));
     let text =  '<b>Geral</b> \n';  
         text +=  '<code>';
         text +=     '<b>Clientes Cadastrados:</b>'+clientes +'\n';
