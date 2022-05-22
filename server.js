@@ -327,6 +327,7 @@ enviarPromocao = async (bot,msg)=>{
         logging: console.log,
         where: {
             pontos: {[Op.lt]:25},
+            chatId: {[Op.ne]:null},
             [Op.or]: [{data_aviso_promocao: null}, {data_aviso_promocao:  { [Sequelize.Op.lte]: (moment().subtract(15, 'days').toDate()) }}]
         }
        // ,limit: 1
