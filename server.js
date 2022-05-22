@@ -370,6 +370,7 @@ enviarPromocao = async (bot,msg)=>{
                 await bot.sendMessage(cliente.chatId, hello, opts);
                 cliente.data_aviso_promocao = new Date();
                 cliente.save();
+                console.log('CLIENTE: '+cliente.nome+ ', PONTOS: '+cliente.pontos);
                 } catch (error) {
                     console.log(error.message);
                     console.log('Erro ao enviar a promoção para o cliente: '+cliente.nome);    
