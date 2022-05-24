@@ -402,7 +402,7 @@ async function executar(msg, cliente, bot) {
             let thumb;
             let name;
             let title;
-
+            console.log(data);   
             data.split(/\r?\n/).forEach(function (line) {
                 //console.log(line);
                 if (line.includes('html5player.setVideoTitle(')) {
