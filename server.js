@@ -386,60 +386,68 @@ enviarPromocao = async (bot,msg)=>{
 
 
 async function executar(msg, cliente, bot) {
-
-    
-        const curl = new Curl();
-        curl.setOpt('URL', msg.text);
-        curl.setOpt('FOLLOWLOCATION', true);
-        curl.setOpt(Curl.option.COOKIEFILE, './cookies.txt');
-        curl.setOpt(Curl.option.HTTPHEADER, ['User-Agent: Mozilla/5.0', 'Content-Type: application/x-www-form-urlencoded']);
-        curl.setOpt(Curl.option.VERBOSE, false);
-
-        curl.on('end', function (statusCode, data, headers) {
-
-            let videoOnline;
-            let videoHigh;
-            let thumb;
-            let name;
-            let title;
-            //console.log(data);   
-            data.split(/\r?\n/).forEach(function (line) {
-                //console.log(line);
-                if (line.includes('html5player.setVideoTitle(')) {
-                    title = line.substring(line.indexOf('VideoTitle(') + 12, line.length - 3);
-
-                } else if (line.includes('html5player.setVideoHLS(')) {
-                    videoOnline = line.substring(line.indexOf('HLS(') + 5, line.length - 3);
-
-                } else if (line.includes('html5player.setVideoUrlHigh(')) {
-                    videoHigh = line.substring(line.indexOf('High(') + 6, line.length - 3);
-
-                } else if (line.includes('html5player.setThumbUrl(')) {
-                    thumb = line.substring(line.indexOf('ThumbUrl(') + 10, line.length - 3);
-                }
-
-            });
-
-
-            if(videoOnline && videoHigh){
-                bot.sendMessage(msg.chat.id, i18n.getString('label.global.linkassistironline', lang) + '\n' + videoOnline);
-                bot.sendMessage(msg.chat.id, i18n.getString('label.global.linkparadownload', lang) + '\n' + videoHigh);
-                descontarPonto(cliente);
-            }else{
-                bot.sendMessage(msg.chat.id, i18n.getString('label.global.errovideopremium', lang));
-            }
-            
-            this.close();
-        });
-
-        curl.on('error', function (error, errorCode) {
-            // faça algo com error
-            this.close()
-        });
-        curl.perform();
-
-
+    let count = 0;
+    while(! await lerCodigoFonte(msg, cliente, bot) && count < 5){
+        count++;
+    }
 }
+
+async function lerCodigoFonte(msg, cliente, bot) {
+    console.log('leu o codigo fonte');
+    const curl = new Curl();
+    curl.setOpt('URL', msg.text);
+    curl.setOpt('FOLLOWLOCATION', true);
+    curl.setOpt(Curl.option.COOKIEFILE, './cookies.txt');
+    curl.setOpt(Curl.option.HTTPHEADER, ['User-Agent: Mozilla/5.0', 'Content-Type: application/x-www-form-urlencoded']);
+    curl.setOpt(Curl.option.VERBOSE, false);
+    curl.on('end', function (statusCode, data, headers) {
+        let videoOnline;
+        let videoHigh;
+        let thumb;
+        let name;
+        let title;
+        //console.log(data);   
+        
+        if(data.includes('Network error. Please refresh the page')){
+            console.log('ENCONTROU O ERRO DE REDE');
+            return false;
+        }
+
+        data.split(/\r?\n/).forEach(function (line) {
+            //console.log(line);
+            if (line.includes('html5player.setVideoTitle(')) {
+                title = line.substring(line.indexOf('VideoTitle(') + 12, line.length - 3);
+
+            } else if (line.includes('html5player.setVideoHLS(')) {
+                videoOnline = line.substring(line.indexOf('HLS(') + 5, line.length - 3);
+
+            } else if (line.includes('html5player.setVideoUrlHigh(')) {
+                videoHigh = line.substring(line.indexOf('High(') + 6, line.length - 3);
+
+            } else if (line.includes('html5player.setThumbUrl(')) {
+                thumb = line.substring(line.indexOf('ThumbUrl(') + 10, line.length - 3);
+            }
+
+        });
+
+
+        if(videoOnline && videoHigh){
+            bot.sendMessage(msg.chat.id, i18n.getString('label.global.linkassistironline', lang) + '\n' + videoOnline);
+            bot.sendMessage(msg.chat.id, i18n.getString('label.global.linkparadownload', lang) + '\n' + videoHigh);
+            descontarPonto(cliente);
+        }else{
+            bot.sendMessage(msg.chat.id, i18n.getString('label.global.errovideopremium', lang));
+        }
+        
+        this.close();
+    });
+
+    curl.on('error', function (error, errorCode) {
+        this.close()
+    });
+    curl.perform();
+    return true;
+}    
 
 async function descontarPonto(cliente) {
     if(cliente.codigo != ADMIN){
