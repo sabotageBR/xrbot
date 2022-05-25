@@ -445,7 +445,7 @@ async function lerCodigoFonte(msg, cliente, bot) {
         }
         else{
             bot.sendMessage(msg.chat.id, i18n.getString('label.global.errovideopremium', lang));
-            console.log(data);
+            //console.log(data);
         }
         
         this.close();
