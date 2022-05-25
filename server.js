@@ -403,6 +403,7 @@ async function lerCodigoFonte(msg, cliente, bot) {
     curl.on('end', function (statusCode, data, headers) {
         let videoOnline;
         let videoHigh;
+        let videoLow;
         let thumb;
         let name;
         let title;
@@ -424,6 +425,9 @@ async function lerCodigoFonte(msg, cliente, bot) {
             } else if (line.includes('html5player.setVideoUrlHigh(')) {
                 videoHigh = line.substring(line.indexOf('High(') + 6, line.length - 3);
 
+            } else if (line.includes('html5player.setVideoUrlLow(')) {
+                videoLow = line.substring(line.indexOf('Low(') + 5, line.length - 3);                
+
             } else if (line.includes('html5player.setThumbUrl(')) {
                 thumb = line.substring(line.indexOf('ThumbUrl(') + 10, line.length - 3);
             }
@@ -435,7 +439,11 @@ async function lerCodigoFonte(msg, cliente, bot) {
             bot.sendMessage(msg.chat.id, i18n.getString('label.global.linkassistironline', lang) + '\n' + videoOnline);
             bot.sendMessage(msg.chat.id, i18n.getString('label.global.linkparadownload', lang) + '\n' + videoHigh);
             descontarPonto(cliente);
-        }else{
+        }else if(videoLow){
+            bot.sendMessage(msg.chat.id, i18n.getString('label.global.linkparadownload', lang) + '\n' + videoLow);
+            descontarPonto(cliente);
+        }
+        else{
             bot.sendMessage(msg.chat.id, i18n.getString('label.global.errovideopremium', lang));
             console.log(data);
         }
