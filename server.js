@@ -37,21 +37,21 @@ const moment = require("moment");
 var promocao = 2;
 
 //DESENVOLVIMENTO
-// let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
-// let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
-// const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
+ //let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
+ //let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
+ //const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
 
 
 //PRODUCAO
-let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
-let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
-const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
+ let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
+ let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
+ const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
 
 var mercadopago = require('mercadopago');
 
 var lang = 'en-us';
 
-const minExpired = 30;
+const minExpired = 60;
 
 (async () => {
     try {
@@ -590,10 +590,12 @@ let captureOrder = async function (element) {
             begin_date: 'NOW-1MONTH',
             end_date: 'NOW',
             status: 'approved',
+            description: element.uid,
             operation_type: 'regular_payment'
           };
 
         req = await mercadopago.payment.search({qs: filters}).catch(function (error) {console.log(error)});
+        //console.log(JSON.stringify(req));
         req.body.results.forEach(async (pagamento) =>{
             if(element.uid === pagamento.description){
 
