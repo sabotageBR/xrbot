@@ -127,7 +127,7 @@ bot.on('message', async (msg) => {
     }
     if (msg.text.includes('http')) {
         if (msg.text.includes('xvideos')) {
-            if(typeof cliente.pontos !== "undefined"){
+            if(cliente != null && typeof cliente.pontos !== "undefined"){
                 console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+nome+' ('+cliente.pontos+'): '+msg.text);    
             }else{
                 console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+nome+': '+msg.text);
