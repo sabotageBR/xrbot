@@ -37,21 +37,22 @@ const moment = require("moment");
 var promocao = 2;
 
 //DESENVOLVIMENTO
- //let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
- //let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
- //const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
+//  let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
+//  let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
+//  const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
 
 
 //PRODUCAO
- let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
- let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
- const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
+  let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
+  let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
+  const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
 
 var mercadopago = require('mercadopago');
 
-var lang = 'en-us';
+var lang = 'pt-br';
 
-const minExpired = 60;
+const minExpired = 80;
+
 
 (async () => {
     try {
@@ -127,7 +128,7 @@ bot.on('message', async (msg) => {
     if (msg.text.includes('http')) {
         if (msg.text.includes('xvideos')) {
             console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+nome+' ('+cliente.pontos+'): '+msg.text);
-            if (cliente.codigo == ADMIN ||  cliente.pontos > 0) {
+            if (cliente.codigo == ADMIN ||  (typeof cliente.pontos !== "undefined" && cliente.pontos > 0)) {
                 bot.sendMessage(msg.chat.id, i18n.getString('label.global.waitextractvideo', lang));
                 executar(msg, cliente, bot);
             } else {
@@ -153,11 +154,12 @@ bot.on('message', async (msg) => {
         enviarPromocao(bot,msg);        
 
     }else {
-        
-        console.log(nome +' ('+cliente.pontos+'): '+msg.text);
-
+        if(cliente != null && typeof cliente.pontos !== "undefined" ){
+            console.log(nome +' ('+cliente.pontos+'): '+msg.text);
+        }else{
+            console.log(nome +': '+msg.text);
+        }
         //let hello = 'ESTAMOS EM MANUTENÇÃO... AGUARDE UM MOMENTO \n';
-
         let promo = i18n.getString('label.global.promotion', lang);
         await bot.sendMessage(chatId, promo);
         
@@ -479,7 +481,7 @@ async function getCliente(msg) {
             cliente = Cliente.create({
                 codigo: msg.from.id,
                 nome: nomeC,
-                pontos: 30,
+                pontos: 15,
                 chatId: msg.chat.id
             }).catch(e =>{});
         } else {
@@ -578,9 +580,11 @@ async function gerarCobrancaMercadoPago(moeda, valor, cliente, pontos, msgId) {
 
 
 let captureOrder = async function (element) {
-
     
-    if (parseInt(Math.abs(element.createdAt.getTime() - new Date().getTime()) / (1000 * 60) % 60) < minExpired) {
+    
+    let diff = Math.abs(element.createdAt - new Date());
+    let minutes =  Math.floor((diff/1000)/60)
+    if (parseInt(minutes) < minExpired) {
         mercadopago.configure({
             access_token: accessToken
         });
