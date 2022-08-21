@@ -127,7 +127,11 @@ bot.on('message', async (msg) => {
     }
     if (msg.text.includes('http')) {
         if (msg.text.includes('xvideos')) {
-            console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+nome+' ('+cliente.pontos+'): '+msg.text);
+            if(typeof cliente.pontos !== "undefined"){
+                console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+nome+' ('+cliente.pontos+'): '+msg.text);    
+            }else{
+                console.log(format.asString('dd/MM/yy hh:mm:ss',new Date())+': '+nome+': '+msg.text);
+            }
             if (cliente.codigo == ADMIN ||  (typeof cliente.pontos !== "undefined" && cliente.pontos > 0)) {
                 bot.sendMessage(msg.chat.id, i18n.getString('label.global.waitextractvideo', lang));
                 executar(msg, cliente, bot);
