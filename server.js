@@ -51,7 +51,7 @@ var mercadopago = require('mercadopago');
 
 var lang = 'pt-br';
 
-const minExpired = 80;
+const minExpired = 1440;
 
 
 (async () => {
