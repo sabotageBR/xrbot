@@ -376,6 +376,7 @@ enviarPromocao = async (bot,msg)=>{
                 cliente.data_aviso_promocao = new Date();
                 cliente.save();
                 console.log('CLIENTE: '+cliente.nome+ ', PONTOS: '+cliente.pontos);
+                delay(3000);
                 } catch (error) {
                     console.log(error.message);
                     console.log('Erro ao enviar a promoção para o cliente: '+cliente.nome);
@@ -389,7 +390,11 @@ enviarPromocao = async (bot,msg)=>{
             console.log(e);
         });
 
-};    
+};
+
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
 
 
 async function executar(msg, cliente, bot) {
