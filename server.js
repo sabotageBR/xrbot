@@ -335,7 +335,7 @@ enviarPromocao = async (bot,msg)=>{
             chatId: {[Op.ne]:null},
             [Op.or]: [{data_aviso_promocao: null}, {data_aviso_promocao:  { [Sequelize.Op.lte]: (moment().subtract(15, 'days').toDate()) }}]
         }
-       // ,limit: 1
+        ,limit: 50
         }).then(async clientes =>{
             console.log('Clientes: '+clientes.length); 
             await bot.sendMessage(msg.from.id, 'Clientes: '+clientes.length);
@@ -378,7 +378,9 @@ enviarPromocao = async (bot,msg)=>{
                 console.log('CLIENTE: '+cliente.nome+ ', PONTOS: '+cliente.pontos);
                 } catch (error) {
                     console.log(error.message);
-                    console.log('Erro ao enviar a promoção para o cliente: '+cliente.nome);    
+                    console.log('Erro ao enviar a promoção para o cliente: '+cliente.nome);
+                    cliente.data_aviso_promocao = new Date();
+                    cliente.save();    
                 }
             });
 
