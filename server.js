@@ -335,7 +335,7 @@ enviarPromocao = async (bot,msg)=>{
             chatId: {[Op.ne]:null},
             [Op.or]: [{data_aviso_promocao: null}, {data_aviso_promocao:  { [Sequelize.Op.lte]: (moment().subtract(15, 'days').toDate()) }}]
         }
-        ,limit: 50
+        ,limit: 200
         }).then(async clientes =>{
             console.log('Clientes: '+clientes.length); 
             await bot.sendMessage(msg.from.id, 'Clientes: '+clientes.length);
