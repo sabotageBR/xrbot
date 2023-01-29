@@ -371,12 +371,12 @@ enviarPromocao = async (bot,msg)=>{
                 };
                 let promo = i18n.getString('label.global.promotion', lang);
                 let hello = i18n.getString('label.global.howmanypointsbuy', lang);
+                await delay(3000);
                 await bot.sendMessage(cliente.chatId, promo);
                 await bot.sendMessage(cliente.chatId, hello, opts);
                 cliente.data_aviso_promocao = new Date();
                 cliente.save();
                 console.log('CLIENTE: '+cliente.nome+ ', PONTOS: '+cliente.pontos);
-                await delay(3000);
                 } catch (error) {
                     console.log(error.message);
                     console.log('Erro ao enviar a promoção para o cliente: '+cliente.nome);
