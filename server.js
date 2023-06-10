@@ -37,22 +37,22 @@ const moment = require("moment");
 var promocao = 2;
 
 //DESENVOLVIMENTO
-//  let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
-//  let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
-//  const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
+ let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
+ let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
+ const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
 
 
 //PRODUCAO
-  let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
-  let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
-  const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
+//   let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
+//   let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
+//   const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
 
 var mercadopago = require('mercadopago');
 
 var lang = 'pt-br';
 
 const minExpired = 1440;
-
+const cookies = ['cookie1.txt', 'cookie2.txt', 'cookie3.txt'];
 
 (async () => {
     try {
@@ -158,10 +158,12 @@ bot.on('message', async (msg) => {
         enviarPromocao(bot,msg);        
 
     }else {
+        console.log(getRandomCookie());
         if(cliente != null && typeof cliente.pontos !== "undefined" ){
             console.log(nome +' ('+cliente.pontos+'): '+msg.text);
         }else{
             console.log(nome +': '+msg.text);
+            
         }
         //let hello = 'ESTAMOS EM MANUTENÇÃO... AGUARDE UM MOMENTO \n';
         let promo = i18n.getString('label.global.promotion', lang);
@@ -409,7 +411,7 @@ async function lerCodigoFonte(msg, cliente, bot) {
     const curl = new Curl();
     curl.setOpt('URL', msg.text);
     curl.setOpt('FOLLOWLOCATION', true);
-    curl.setOpt(Curl.option.COOKIEFILE, './cookies.txt');
+    curl.setOpt(Curl.option.COOKIEFILE, './'+getRandomCookie());
     curl.setOpt(Curl.option.HTTPHEADER, ['User-Agent: Mozilla/5.0', 'Content-Type: application/x-www-form-urlencoded']);
     curl.setOpt(Curl.option.VERBOSE, false);
     curl.on('end', function (statusCode, data, headers) {
@@ -700,6 +702,11 @@ corrigirDados = async () => {
 
 };
 
+
+function getRandomCookie() {
+    const randomIndex = Math.floor(Math.random() * cookies.length);
+    return cookies[randomIndex];
+}
 
 
 port = process.env.PORT || 8888;
