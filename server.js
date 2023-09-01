@@ -37,22 +37,22 @@ const moment = require("moment");
 var promocao = 2;
 
 //DESENVOLVIMENTO
- let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
- let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
- const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
+ //let publicKeyML = 'TEST-9a65716f-a1fa-4a23-8152-eac77271bcae';
+ //let accessToken = 'TEST-4788801943068672-032721-c9e6cbd022064bda1cf9c41260deaf94-1096864621';
+ //const token = '5297559808:AAFwjOXIeBbsK9vY0KMMIn1fvaJWCC2ooZ4';
 
 
 //PRODUCAO
-//   let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
-//   let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
-//   const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
+   let publicKeyML = 'APP_USR-b4a9f9a4-65a7-43fa-9ec7-d0602649d2a5';
+   let accessToken = 'APP_USR-4788801943068672-032721-91c00f28ae8c5d6e498ca558961c1f62-1096864621';
+   const token = '5256485733:AAEKTjfqE6DEgb8IB6Lhspb6UT3bYCkccuo';
 
 var mercadopago = require('mercadopago');
 
 var lang = 'pt-br';
 
 const minExpired = 1440;
-const cookies = ['cookie1.txt', 'cookie2.txt', 'cookie3.txt'];
+const cookies = ['cookies1.txt', 'cookies2.txt', 'cookies3.txt'];
 
 (async () => {
     try {
@@ -337,7 +337,7 @@ enviarPromocao = async (bot,msg)=>{
             chatId: {[Op.ne]:null},
             [Op.or]: [{data_aviso_promocao: null}, {data_aviso_promocao:  { [Sequelize.Op.lte]: (moment().subtract(15, 'days').toDate()) }}]
         }
-        ,limit: 300
+        ,limit: 400
         }).then(async clientes =>{
             console.log('Clientes: '+clientes.length); 
             await bot.sendMessage(msg.from.id, 'Clientes: '+clientes.length);
@@ -408,10 +408,13 @@ async function executar(msg, cliente, bot) {
 
 async function lerCodigoFonte(msg, cliente, bot) {
     console.log('leu o codigo fonte');
+    let cookieRandom = 	'./'+getRandomCookie();
+    console.log(cookieRandom);	
     const curl = new Curl();
     curl.setOpt('URL', msg.text);
     curl.setOpt('FOLLOWLOCATION', true);
-    curl.setOpt(Curl.option.COOKIEFILE, './'+getRandomCookie());
+    curl.setOpt(Curl.option.COOKIEFILE, cookieRandom);
+    //curl.setOpt(Curl.option.COOKIEFILE, './cookies.txt');
     curl.setOpt(Curl.option.HTTPHEADER, ['User-Agent: Mozilla/5.0', 'Content-Type: application/x-www-form-urlencoded']);
     curl.setOpt(Curl.option.VERBOSE, false);
     curl.on('end', function (statusCode, data, headers) {
@@ -494,7 +497,7 @@ async function getCliente(msg) {
             cliente = Cliente.create({
                 codigo: msg.from.id,
                 nome: nomeC,
-                pontos: 15,
+                pontos: 2,
                 chatId: msg.chat.id
             }).catch(e =>{});
         } else {
@@ -519,7 +522,7 @@ async function getClienteChat(msg) {
             cliente = Cliente.create({
                 codigo: msg.chat.id,
                 nome: nomeC,
-                pontos: 30
+                pontos:2 
             }).catch(e =>{});
         } else {
             cliente = clientes[0];
